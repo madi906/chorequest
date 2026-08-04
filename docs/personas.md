@@ -47,3 +47,9 @@ Understand technical implementation.
 
 Device:
 Laptop
+
+---
+Version: 0.6
+Status: Draft
+Last Updated: August 2026
+Owner: Akmal Hadi

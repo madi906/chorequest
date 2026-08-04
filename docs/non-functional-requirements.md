@@ -33,3 +33,9 @@ Avoid duplicate logic.
 
 Auditability
 All point changes must be recorded.
+
+---
+Version: 0.6
+Status: Draft
+Last Updated: August 2026
+Owner: Akmal Hadi

@@ -76,3 +76,9 @@ The system shall display a leaderboard.
 
 FR-010 - Points
 The system shall record all point transactions.
+
+---
+Version: 0.6
+Status: Draft
+Last Updated: August 2026
+Owner: Akmal Hadi
