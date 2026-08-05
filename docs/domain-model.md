@@ -97,3 +97,32 @@ Version: 0.6
 Status: Draft
 Last Updated: August 2026
 Owner: Akmal Hadi
+
+---
+
+## Core Entities
+
+| Entity | Description |
+|----------|-------------|
+| Household | Represents a family using the application. |
+| App User | Represents a parent or child within a household. |
+| Chore Category | Groups similar chores together. |
+| Chore | Defines a reusable household task. |
+| Assignment | Assigns a chore to a child and tracks its progress. |
+| Point Transaction | Records every point earned or deducted. |
+| Reward | Defines rewards that children can redeem. |
+| Reward Redemption | Records reward redemption requests and approvals. |
+| Audit Log | Records important system events for traceability. |
+
+## Future Entities
+
+| Entity | Description |
+|----------|-------------|
+| Attachment | Stores photos or supporting files for completed chores. |
+
+---
+Version: 1.0
+Status: Draft
+Remark: Added core entities / table with description
+Last Updated: August 2026
+Owner: Akmal Hadi
