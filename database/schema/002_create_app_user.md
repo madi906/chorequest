@@ -15,7 +15,7 @@ A user belongs to one household and can be either a parent or a child.
 | app_user_id | Unique identifier (UUID). |
 | household_id | References the household the user belongs to. |
 | app_user_name | User's display name. |
-| app_user_email | User's email address. Must be unique. |
+| app_user_email | Parent email address. Optional for children. |
 | app_user_phone | Optional contact number. |
 | user_role | Parent or Child. |
 | app_user_birthday | User's date of birth. |

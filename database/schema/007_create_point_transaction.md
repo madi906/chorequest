@@ -50,23 +50,23 @@ The current point balance is calculated by summing all active point transactions
 
 ## Transaction Types
 
-| Code | Description |
-|------|-------------|
-| ASSIGNMENT | Points earned from an approved assignment. |
-| REWARD_REDEMPTION | Points deducted for redeeming a reward. |
-| BONUS | Bonus points awarded by a parent. |
-| PENALTY | Points deducted as a penalty. |
-| MANUAL_ADJUSTMENT | Manual correction or adjustment. |
+| Code              | Description                                |
+|-------------------|--------------------------------------------|
+| ASSIGNMENT        | Points earned from an approved assignment. |
+| REWARD_REDEMPTION | Points deducted for redeeming a reward.    |
+| BONUS             | Bonus points awarded by a parent.          |
+| PENALTY           | Points deducted as a penalty.              |
+| MANUAL_ADJUSTMENT | Manual correction or adjustment.           |
 
 ---
 
 ## Example Data
 
-| User | Type | Points | Description |
-|------|------|-------:|-------------|
-| Adam | ASSIGNMENT | +20 | Wash dishes |
-| Adam | BONUS | +5 | Helped sibling |
-| Adam | REWARD_REDEMPTION | -50 | Redeemed LEGO |
+| User | Type              | Points | Description    |
+|------|-------------------|--------|----------------|
+| Adam | ASSIGNMENT.       | +20    | Wash dishes    |
+| Adam | BONUS             | +5     | Helped sibling |
+| Adam | REWARD_REDEMPTION | -50    | Redeemed LEGO  |
 
 ---
 

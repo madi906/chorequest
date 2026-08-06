@@ -18,7 +18,7 @@ CREATE TABLE app_user (
 
     app_user_name VARCHAR(100) NOT NULL,
 
-    app_user_email VARCHAR(255) NOT NULL UNIQUE,
+    app_user_email VARCHAR(255) UNIQUE,,
 
     app_user_phone VARCHAR(30),
 
