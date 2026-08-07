@@ -1,6 +1,6 @@
 /*
 ====================================================
-File: 000_extensions.sql
+File: 000_create_extensions.sql
 
 Purpose:
 Enable PostgreSQL extensions required by ChoreQuest.
