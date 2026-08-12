@@ -150,3 +150,13 @@ Indexes will be added for:
 - Clear business relationships
 - Portable schema
 - Enterprise-ready design
+
+
+# Sprint 1 & 2 Summary
+For ChoreQuest, I designed a normalized PostgreSQL relational database covering households, users, chores, assignments, rewards and transactions. I used UUID primary keys, foreign keys, CHECK constraints and UNIQUE constraints to enforce data integrity at the database layer.
+
+I then moved the database into a Supabase CLI workflow so the schema could be version controlled through migrations rather than manually maintained in the dashboard. I separated the database design documentation from the executable migration history and added reproducible seed data for local development.
+
+One key design decision was the points system. Instead of storing only a user's current balance, I implemented a transaction ledger so every point movement—such as completing a chore, receiving a bonus or redeeming a reward—is auditable. We verified that Irham earned 80 points, redeemed 75, and therefore has a calculated balance of 5.
+
+Finally, I created SQL verification scripts and used `supabase db reset` and `supabase db diff` to prove that the database can be recreated consistently and that there is no unexpected schema drift. The whole database workflow is committed to Git and released as v1.1.0.
