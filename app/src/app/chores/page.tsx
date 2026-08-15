@@ -1,5 +1,41 @@
 import { supabase } from "@/lib/supabase";
 
+type Assignment = {
+  assignment_id: string;
+  assigned_for_date: string;
+  due_date: string | null;
+  default_points: number;
+  awarded_points: number | null;
+  completion_percentage: number;
+  completed_at: string | null;
+  approved_at: string | null;
+  chore: {
+    chore_name: string;
+    difficulty: string;
+  } | null;
+  assigned_user: {
+    app_user_id: string;
+    app_user_name: string;
+    user_role: string;
+  } | null;
+  assignment_status: {
+    status_code: string;
+    status_name: string;
+  } | null;
+};
+
+type Chore = {
+  chore_id: string;
+  chore_name: string;
+  chore_description: string | null;
+  difficulty: string;
+  default_points: number;
+  estimated_duration_minutes: number | null;
+  chore_category: {
+    chore_category_name: string;
+  } | null;
+};
+
 export default async function ChoresPage() {
   const { data: chores, error: choresError } = await supabase
     .from("chore")
@@ -70,6 +106,19 @@ export default async function ChoresPage() {
     );
   }
 
+  /*
+   * Supabase generated types currently describe these relationships
+   * as arrays, while our verified relationship tests show that the
+   * runtime response is a single object.
+   *
+   * Normalize the verified runtime shape for TypeScript.
+   */
+  const typedAssignments =
+    (assignments ?? []) as unknown as Assignment[];
+
+  const typedChores =
+    (chores ?? []) as unknown as Chore[];
+
   return (
     <section className="space-y-10">
       <header>
@@ -103,7 +152,7 @@ export default async function ChoresPage() {
 
         <div className="overflow-hidden rounded-xl border bg-white">
           <div className="divide-y">
-            {assignments?.map((assignment) => (
+            {typedAssignments.map((assignment) => (
               <article
                 key={assignment.assignment_id}
                 className="p-5"
@@ -111,19 +160,22 @@ export default async function ChoresPage() {
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <div>
                     <h3 className="font-semibold">
-                      {assignment.chore?.[0]?.chore_name}
+                      {assignment.chore?.chore_name ??
+                        "Unknown chore"}
                     </h3>
 
                     <p className="mt-1 text-sm text-gray-500">
                       Assigned to{" "}
                       <span className="font-medium text-gray-700">
-                        {assignment.assigned_user?.[0]?.app_user_name}
+                        {assignment.assigned_user?.app_user_name ??
+                          "Unassigned"}
                       </span>
                     </p>
                   </div>
 
                   <span className="w-fit rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold uppercase">
-                    {assignment.assignment_status?.[0]?.status_name}
+                    {assignment.assignment_status?.status_name ??
+                      "Unknown"}
                   </span>
                 </div>
 
@@ -186,7 +238,7 @@ export default async function ChoresPage() {
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-          {chores?.map((chore) => (
+          {typedChores.map((chore) => (
             <article
               key={chore.chore_id}
               className="rounded-xl border bg-white p-6 shadow-sm"
@@ -198,7 +250,8 @@ export default async function ChoresPage() {
                   </h3>
 
                   <p className="mt-1 text-sm text-gray-500">
-                    {chore.chore_category?.[0]?.chore_category_name}
+                    {chore.chore_category?.chore_category_name ??
+                      "Uncategorized"}
                   </p>
                 </div>
 
