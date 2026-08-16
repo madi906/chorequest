@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import RewardRedemptionPanel from "@/components/RewardRedemptionPanel";
 
 type Reward = {
   reward_id: string;
@@ -11,41 +12,128 @@ type Reward = {
   is_active: boolean;
 };
 
-export default async function RewardsPage() {
-  const { data, error } = await supabase
-    .from("reward")
-    .select(
-      `
-        reward_id,
-        reward_name,
-        reward_type,
-        point_cost,
-        reward_description,
-        available_quantity,
-        display_order,
-        is_active
-      `
-    )
-    .eq("is_deleted", false)
-    .order("display_order");
+type Child = {
+  app_user_id: string;
+  app_user_name: string;
+  user_role: string;
+};
 
-  if (error) {
+type PointTransaction = {
+  app_user_id: string;
+  point_amount: number;
+};
+
+export default async function RewardsPage() {
+  const [
+    { data: rewardsData, error: rewardsError },
+    { data: childrenData, error: childrenError },
+    { data: pointTransactionsData, error: pointTransactionsError },
+  ] = await Promise.all([
+    supabase
+      .from("reward")
+      .select(
+        `
+          reward_id,
+          reward_name,
+          reward_type,
+          point_cost,
+          reward_description,
+          available_quantity,
+          display_order,
+          is_active
+        `
+      )
+      .eq("is_deleted", false)
+      .order("display_order"),
+
+    supabase
+      .from("app_user")
+      .select(
+        `
+          app_user_id,
+          app_user_name,
+          user_role
+        `
+      )
+      .eq("is_active", true)
+      .eq("is_deleted", false)
+      .eq("user_role", "CHILD")
+      .order("app_user_name"),
+
+    supabase
+      .from("point_transaction")
+      .select(
+        `
+          app_user_id,
+          point_amount
+        `
+      )
+      .eq("is_deleted", false),
+  ]);
+
+  if (
+    rewardsError ||
+    childrenError ||
+    pointTransactionsError
+  ) {
     return (
       <section>
         <h1 className="text-3xl font-bold">Rewards</h1>
 
         <p className="mt-2 text-red-600">
-          Unable to load rewards.
+          Unable to load reward management data.
         </p>
 
-        <pre className="mt-4 rounded-lg bg-gray-100 p-4 text-sm">
-          {error.message}
-        </pre>
+        {rewardsError && (
+          <pre className="mt-4 rounded-lg bg-gray-100 p-4 text-sm">
+            Reward error: {rewardsError.message}
+          </pre>
+        )}
+
+        {childrenError && (
+          <pre className="mt-4 rounded-lg bg-gray-100 p-4 text-sm">
+            Children error: {childrenError.message}
+          </pre>
+        )}
+
+        {pointTransactionsError && (
+          <pre className="mt-4 rounded-lg bg-gray-100 p-4 text-sm">
+            Point transaction error:{" "}
+            {pointTransactionsError.message}
+          </pre>
+        )}
       </section>
     );
   }
 
-  const rewards = (data ?? []) as Reward[];
+  const rewards = (rewardsData ?? []) as Reward[];
+  const children = (childrenData ?? []) as Child[];
+  const pointTransactions =
+    (pointTransactionsData ?? []) as PointTransaction[];
+
+  /*
+   * Calculate each child's current point balance from the
+   * point transaction ledger.
+   *
+   * Positive transactions add points.
+   * Negative transactions, such as REWARD_REDEMPTION,
+   * deduct points.
+   */
+  const pointsByUserId = new Map<string, number>();
+
+  for (const transaction of pointTransactions) {
+    pointsByUserId.set(
+      transaction.app_user_id,
+      (pointsByUserId.get(transaction.app_user_id) ?? 0) +
+        transaction.point_amount
+    );
+  }
+
+  const childrenWithBalances = children.map((child) => ({
+    app_user_id: child.app_user_id,
+    app_user_name: child.app_user_name,
+    point_balance: pointsByUserId.get(child.app_user_id) ?? 0,
+  }));
 
   const activeRewards = rewards.filter(
     (reward) => reward.is_active
@@ -116,7 +204,7 @@ export default async function RewardsPage() {
               className="rounded-xl border bg-white p-6 shadow-sm"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
+                <div className="min-w-0">
                   <h3 className="text-lg font-semibold">
                     {reward.reward_name}
                   </h3>
@@ -154,6 +242,22 @@ export default async function RewardsPage() {
                     : `${reward.available_quantity} available`}
                 </span>
               </div>
+
+              {/* ======================================================
+                  Redemption Eligibility
+                  ====================================================== */}
+
+              <RewardRedemptionPanel
+                childUsers={childrenWithBalances}
+                reward={{
+                  reward_id: reward.reward_id,
+                  reward_name: reward.reward_name,
+                  point_cost: reward.point_cost,
+                  available_quantity:
+                    reward.available_quantity,
+                  is_active: reward.is_active,
+                }}
+              />
             </article>
           ))}
         </div>
